@@ -69,3 +69,21 @@ func (chat *ChatGptApi) GetTable(c *gin.Context) {
 		"results": results,
 	}, "ChatGpt生成完成", c)
 }
+
+func (chat *ChatGptApi) TestConnect(c *gin.Context) {
+	var req sysModel.Datasource
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	names, err := chatGptService.TestConnect(req)
+	if err != nil {
+		global.GVA_LOG.Error("数据库连接失败!", zap.Error(err))
+		response.FailWithDetailed(gin.H{}, "连接失败"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(gin.H{
+		"names": names,
+	}, "连接成功", c)
+}

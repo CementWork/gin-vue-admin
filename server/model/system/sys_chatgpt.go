@@ -20,3 +20,9 @@ type ChatFieldNoTable struct {
 	COLUMN_NAME    string
 	COLUMN_COMMENT string
 }
+
+type Datasource struct {
+	Url      string `json:"url"`
+	UserName string `json:"username"`
+	Password string `json:"password"`
+}

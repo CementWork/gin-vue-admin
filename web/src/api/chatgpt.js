@@ -29,3 +29,11 @@ export const deleteSKApi = () => {
     method: 'delete'
   })
 }
+
+export const testConnectApi = (data)=>{
+  return service({
+    url: '/chatGpt/testConnect',
+    method: 'post',
+    data
+  })
+}

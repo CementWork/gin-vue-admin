@@ -35,7 +35,7 @@
       <div
         class="user-box"
       >
-        <div class="service gvaIcon-customer-service" @click="toService" />
+        <!-- <div class="service gvaIcon-customer-service" @click="toService" /> -->
       </div>
     </template>
   </div>

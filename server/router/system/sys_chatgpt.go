@@ -16,5 +16,6 @@ func (s *ChatGptRouter) InitChatGptRouter(Router *gin.RouterGroup) {
 		chatGptRouter.GET("getSK", chatGptApi.GetSK)
 		chatGptRouter.DELETE("deleteSK", chatGptApi.DeleteSK)
 		chatGptRouter.POST("getTable", chatGptApi.GetTable)
+		chatGptRouter.POST("testConnect", chatGptApi.TestConnect)
 	}
 }

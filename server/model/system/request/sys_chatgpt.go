@@ -6,6 +6,7 @@ import (
 )
 
 type ChatGptRequest struct {
+	system.Datasource
 	system.ChatGpt
 	request.PageInfo
 }
