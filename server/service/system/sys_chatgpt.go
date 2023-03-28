@@ -64,7 +64,7 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql2 string, r
 	}
 	jsonBytes, err := json.Marshal(tablesInfo)
 	if err != nil {
-		return
+		return "", nil, err
 	}
 	//var tablesInfo []system.ChatField
 	//global.GVA_DB.Table("information_schema.columns").Where("TABLE_SCHEMA = ?", req.DBName).Scan(&tablesInfo)
@@ -93,9 +93,8 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql2 string, r
 		fmt.Printf("Completion error: %v\n", err)
 		return
 	}
-	gptRow, _ := db.Query(resp.Choices[0].Message.Content)
-	defer gptRow.Close()
-	if gptRow == nil {
+	gptRow, err := db.Query(resp.Choices[0].Message.Content)
+	if err != nil {
 		return
 	}
 	// 获取列名
@@ -141,6 +140,7 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql2 string, r
 		resultsMap = append(resultsMap, resultMap)
 	}
 
+	defer gptRow.Close()
 	//err = global.GVA_DB.Raw(resp.Choices[0].Message.Content).Scan(&results).Error
 	return resp.Choices[0].Message.Content, resultsMap, err
 }
