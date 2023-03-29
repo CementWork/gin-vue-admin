@@ -119,7 +119,47 @@
       </el-tab-pane>
       <el-tab-pane label="免连接" name="second">
         <div class="content">
-          <p>免连接内容</p>
+          <el-form :model="form" label-width="120px">
+            <el-form-item label="查询db描述：">
+              <el-input
+                v-model="form.chat"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                type="textarea"
+                clearable
+                placeholder="请输入对话"
+              />
+            </el-form-item>
+            <el-form-item label="GPT生成SQL:">
+              <el-input
+                  v-model="sql"
+                  :autosize="{ minRows: 2, maxRows: 4 }"
+                  type="textarea"
+                  disabled
+                  placeholder="此处展示自动生成的sql"
+              />
+            </el-form-item>
+            <el-button type="primary" @click="handleQueryTable">查询</el-button>
+          </el-form>
+          <div class="tables">
+            <el-table
+              v-if="tableData.length"
+              ref="multipleTable"
+              :data="tableData"
+              style="width: 100%"
+              tooltip-effect="dark"
+              height="400px"
+            >
+              <el-table-column
+                v-for="(item, index) in tableData[0]"
+                :key="index"
+                :prop="index"
+                :label="index"
+                min-width="200"
+                show-overflow-tooltip
+              />
+            </el-table>
+            <p v-else class="text">请在对话框输入你需要AI帮你查询的内容：）</p>
+          </div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -206,14 +246,6 @@ const testConnection = async() => {
 </script>
 
 <style scoped lang="scss">
-.secret{
-  padding: 30px;
-  margin-top: 20px;
-  background: #F5F5F5;
-  p {
-    line-height: 30px;
-  }
-}
 .query-ipt{
   width: 300px;
   margin-right: 30px;
@@ -225,7 +257,6 @@ const testConnection = async() => {
   }
   padding: 10px;
   width: 100%;
-  background: #F5F5F5;
   margin-top: 30px;
 }
 .tables{
