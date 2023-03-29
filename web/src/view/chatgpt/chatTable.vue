@@ -65,7 +65,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item v-if="form.dbtype === 'PostgreSQL'" label="查询schema名称：">
+            <el-form-item v-if="form.dbtype === 'PostgreSQL'" label="schema名称：">
               <el-select v-model="form.schema" placeholder="请选择schema" style="width: 115px">
                 <el-option
                   v-for="(item, index) in schemaArr"
