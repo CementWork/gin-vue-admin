@@ -12,6 +12,16 @@
         </div>
         <div v-else>
           <el-form :model="form" label-width="120px">
+            <el-form-item label="数据库类型">
+              <el-select v-model="form.dbtype" placeholder="请选择数据库类型" style="width: 115px">
+                <el-option
+                  v-for="(item, index) in dbTypeArr"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item label="数据库连接">
               <el-input
                 v-model="form.url"
@@ -49,6 +59,16 @@
               <el-select v-model="form.dbname" placeholder="请选择库" style="width: 115px">
                 <el-option
                   v-for="(item, index) in dbArr"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="form.dbtype === 'PostgreSQL'" label="查询schema名称：">
+              <el-select v-model="form.schema" placeholder="请选择schema" style="width: 115px">
+                <el-option
+                  v-for="(item, index) in schemaArr"
                   :key="index"
                   :label="item"
                   :value="item"
@@ -149,13 +169,17 @@ const deleteSK = async() => {
 }
 
 const form = ref({
+  dbtype: '',
   url:'',
   username:'',
   password:'',
   dbname: '',
+  schema: '',
   chat: '',
 })
 const dbArr = ref([])
+const schemaArr = ref([])
+const dbTypeArr = ref(['MySql', 'PostgreSQL'])
 const tableData = ref([])
 const activeName = ref('first')
 
@@ -176,6 +200,7 @@ const testConnection = async() => {
   const res = await testConnectApi(form.value)
   if (res.code === 0) {
     dbArr.value = res.data.names
+    schemaArr.value = res.data.schemas
   }
 }
 </script>
