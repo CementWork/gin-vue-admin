@@ -5,10 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
+	_ "github.com/lib/pq"
 )
 
-func TestConnect(username, password, url, dbName string) (sqlDb *sql.DB, err error) {
+func TestMysqlConnect(username, password, url, dbName string) (sqlDb *sql.DB, err error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, url, dbName))
+	if err != nil {
+		return
+	}
+	// 测试连接
+	return db, db.Ping()
+}
+
+func TestPgSqlConnect(username, password, url, dbName string) (sqlDb *sql.DB, err error) {
+	db, err := sql.Open("postgres", fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable", username, password, url, dbName))
 	if err != nil {
 		return
 	}

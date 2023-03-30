@@ -2,6 +2,7 @@ package system
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -43,13 +44,24 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql2 string, r
 		return "", nil, errors.New("未选择db")
 	}
 	//测试连接
-	db, err := utils.TestConnect(req.UserName, req.Password, req.Url, req.DBName)
-	if err != nil {
-		return
+	var db *sql.DB
+	var jsonBytes []byte
+	if req.DbType == "MySql" {
+		db, err = utils.TestMysqlConnect(req.UserName, req.Password, req.Url, req.DBName)
+		if err != nil {
+			return "", nil, err
+		}
+		//查询mysql库下表名和字断
+		jsonBytes, err = utils.GetMysqlDbField(db, req.DBName)
+	} else {
+		db, err = utils.TestPgSqlConnect(req.UserName, req.Password, req.Url, req.DBName)
+		if err != nil {
+			return "", nil, err
+		}
+		//查询pgsql库下表名和字断
+		jsonBytes, err = utils.GetMysqlDbField(db, req.Schema)
 	}
 	defer db.Close()
-	//查询mysql库下表名和字断
-	jsonBytes, err := utils.GetMysqlDbField(db, req.DBName)
 	if err != nil {
 		return "", nil, err
 	}
@@ -80,12 +92,46 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql2 string, r
 }
 
 func (chat *ChatGptService) TestConnect(req system.Datasource) (names []string, err error) {
-	db, err := utils.TestConnect(req.UserName, req.Password, req.Url, "")
+	var db *sql.DB
+	var rows *sql.Rows
+	if req.DbType == "MySql" {
+		db, err = utils.TestMysqlConnect(req.UserName, req.Password, req.Url, "")
+		if err != nil {
+			return
+		}
+		rows, err = db.Query("SELECT schema_name FROM information_schema.schemata")
+
+	} else {
+		db, err = utils.TestPgSqlConnect(req.UserName, req.Password, req.Url, "")
+		if err != nil {
+			return
+		}
+		rows, err = db.Query("SELECT datname FROM pg_database WHERE datistemplate = false")
+	}
+	defer db.Close()
 	if err != nil {
 		return
 	}
-	defer db.Close()
+	defer rows.Close()
+	var schemaNames = make([]string, 0)
+	for rows.Next() {
+		var schemaName string
+		err = rows.Scan(&schemaName)
+		if err != nil {
+			panic(err.Error())
+		}
+		schemaNames = append(schemaNames, schemaName)
+	}
+	return schemaNames, err
+}
+
+func (chat *ChatGptService) GetSchema(req request.ChatGptRequest) (names []string, err error) {
+	db, err := utils.TestPgSqlConnect(req.UserName, req.Password, req.Url, req.DBName)
+	if err != nil {
+		return
+	}
 	rows, err := db.Query("SELECT schema_name FROM information_schema.schemata")
+	defer db.Close()
 	if err != nil {
 		return
 	}

@@ -37,3 +37,11 @@ export const testConnectApi = (data)=>{
     data
   })
 }
+
+export const getSchemaApi = (data)=>{
+  return service({
+    url: '/chatGpt/getSchema',
+    method: 'post',
+    data
+  })
+}

@@ -22,7 +22,9 @@ type ChatFieldNoTable struct {
 }
 
 type Datasource struct {
+	DbType   string `json:"dbtype"`
 	Url      string `json:"url"`
 	UserName string `json:"username"`
 	Password string `json:"password"`
+	Schema   string `json:"schema"`
 }

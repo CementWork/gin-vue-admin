@@ -87,3 +87,22 @@ func (chat *ChatGptApi) TestConnect(c *gin.Context) {
 		"names": names,
 	}, "连接成功", c)
 }
+
+func (chat *ChatGptApi) GetSchema(c *gin.Context) {
+	var req request.ChatGptRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	names, err := chatGptService.GetSchema(req)
+	if err != nil {
+		global.GVA_LOG.Error("获取schema失败!", zap.Error(err))
+		response.FailWithDetailed(gin.H{}, "获取schema失败"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(gin.H{
+		"names": names,
+	}, "获取schema成功", c)
+
+}

@@ -56,7 +56,7 @@
               <el-button type="primary" @click="testConnection">连接数据库</el-button>
             </el-form-item>
             <el-form-item label="查询db名称：">
-              <el-select v-model="form.dbname" placeholder="请选择库" style="width: 115px">
+              <el-select v-model="form.dbname" placeholder="请选择库" style="width: 115px" @change="getSchema">
                 <el-option
                   v-for="(item, index) in dbArr"
                   :key="index"
@@ -172,7 +172,8 @@ import { getTableApi,
   createSKApi,
   getSKApi,
   deleteSKApi,
-  testConnectApi } from '@/api/chatgpt'
+  testConnectApi,
+  getSchemaApi } from '@/api/chatgpt'
 import { getDB as getDBAPI } from '@/api/autoCode'
 import { ref, reactive } from 'vue'
 
@@ -240,7 +241,15 @@ const testConnection = async() => {
   const res = await testConnectApi(form.value)
   if (res.code === 0) {
     dbArr.value = res.data.names
-    schemaArr.value = res.data.schemas
+  }
+}
+
+const getSchema = async() => {
+  if (form.value.dbtype === 'PostgreSQL') {
+    const res = await getSchemaApi(form.value)
+    if (res.code === 0) {
+      schemaArr.value = res.data.names
+    }
   }
 }
 </script>
